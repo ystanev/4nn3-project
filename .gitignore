@@ -118,5 +118,7 @@ fabric.properties
 
 # Data Folder
 # data/*
+*.npy
+rsa*
 
 # End of https://www.gitignore.io/api/linux,pycharm,visualstudiocode
