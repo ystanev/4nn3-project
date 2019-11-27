@@ -7,9 +7,13 @@ from PIL import Image, ImageOps
 import glob
 filelist = glob.glob('data/*.jpg')
 
+# Images
 X = np.array([np.array(ImageOps.grayscale(Image.open(fname)))
               for fname in filelist])  # array of images
-
 np.save('image_data', X)
+
+# File Names
+y = np.array([fname for fname in filelist])
+np.save('image_names', y)
 
 print("DONE")
