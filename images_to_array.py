@@ -3,17 +3,17 @@
 # array shape: [13233, 255, 255]
 
 import numpy as np
-from PIL import Image, ImageOps
+# from PIL import Image, ImageOps
 import glob
 filelist = glob.glob('data/*.jpg')
 
 # Images
-X = np.array([np.array(ImageOps.grayscale(Image.open(fname)))
-              for fname in filelist])  # array of images
-np.save('image_data', X)
+# X = np.array([np.array(ImageOps.grayscale(Image.open(fname)))
+#               for fname in filelist])  # array of images
+# np.save('image_data', X)
 
 # File Names
-y = np.array([fname for fname in filelist])
-np.save('image_names', y)
+y = np.array([fname.split("/")[1] for fname in filelist])
+np.save('image_names2', y)
 
 print("DONE")

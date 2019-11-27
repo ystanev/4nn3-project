@@ -122,3 +122,4 @@ fabric.properties
 rsa*
 
 # End of https://www.gitignore.io/api/linux,pycharm,visualstudiocode
+data_arrays.zip
