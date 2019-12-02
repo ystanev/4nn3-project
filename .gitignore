@@ -117,7 +117,11 @@ fabric.properties
 .history
 
 # Data Folder
-# data/*
+data*
+gender_based/lwf_gender_labeled_data*
+gender_based/data_arrays_and_labels*
+misc/data*
+*.jpg
 *.npy
 rsa*
 
