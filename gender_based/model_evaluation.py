@@ -7,6 +7,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.models import Sequential
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
+from keras.models import load_model
 
 
 batch_size = 128
@@ -54,51 +55,6 @@ x_test /= 255  # Why?
 y_train = to_categorical(y_train, num_classes)
 y_test = to_categorical(y_test, num_classes)
 
-# The core core for CNN
-model = Sequential()
-
-# Convolutional Layers
-
-# 1
-model.add(Conv2D(32, kernel_size=(7, 7), strides=(1, 1),
-                 activation='relu', input_shape=input_shape))
-model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-# 2
-model.add(Conv2D(32, (7, 7), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-# 3
-model.add(Conv2D(32, (7, 7), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-
-# Flatten the output
-model.add(Flatten())
-model.add(Dense(512, activation='relu'))
-model.add(Dense(num_classes, activation='softmax'))
-
-# Configures the model for training.
-model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.Adam(),
-              metrics=['accuracy'])
-
-#Timing The Code
-start_time = time.time()  
-
-# Train the model
-model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs,
-          verbose=1, validation_data=(x_test, y_test))
-
-# Test the model
+model = load_model("gender_based/models/male_female_model.h5")
 score = model.evaluate(x_test, y_test, verbose=1)
-
-elapsed_time = time.time() - start_time
-
-model.save('gender_based/models/male_female_model.h5')
-print("Model Saved to Disk")
-
-# Confusion Matrix
-print("Elapsed Time: ", elapsed_time)
-# y_pred = np.argmax(score, axis=0)
-# print("Confusion Matrix:\n", confusion_matrix(y, y_pred))
-
-
-print("DONE")
+print(score[1]*100)

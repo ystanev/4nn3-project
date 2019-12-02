@@ -118,6 +118,7 @@ fabric.properties
 
 # Data Folder
 data*
+gender_based/models*
 gender_based/lwf_gender_labeled_data*
 gender_based/data_arrays_and_labels*
 misc/data*
