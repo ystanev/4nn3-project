@@ -52,9 +52,21 @@ x_test /= 255  # Why?
 # print(x_test.shape[0], 'test samples')
 
 # convert class vectors to binary class matrices - this is for use in the categorical_crossentropy loss
-y_train = to_categorical(y_train, num_classes)
-y_test = to_categorical(y_test, num_classes)
+# y_train = to_categorical(y_train, num_classes)
+# y_test = to_categorical(y_test, num_classes)
 
-model = load_model("gender_based/models/male_female_model.h5")
-score = model.evaluate(x_test, y_test, verbose=1)
-print(score[1]*100)
+# model = load_model("gender_based/models/male_female_model.h5")
+# score = model.evaluate(x_test, y_test, verbose=1)
+# print(score[1]*100)
+
+# y_pred = model.predict(x_test, verbose=1)
+# rounded_predictions = model.predict_classes(x_test, verbose=1)
+# np.savetxt('rounded_predictions.txt', rounded_predictions, fmt="%d")
+
+# np.savetxt('y_pred.txt', y_pred)
+# print(y_pred)
+# y_pred_2 = np.argmax(np.loadtxt('gender_based/y_pred.txt'), axis=0)
+# y_test_2 = np.argmax(y_test, axis=0)
+# print(confusion_matrix(y_test_2, y_pred_2[:, 0]))
+y_pred = np.loadtxt('gender_based/rounded_predictions.txt')
+print(confusion_matrix(y_test, y_pred))
