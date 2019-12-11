@@ -1,0 +1,11 @@
+name: 4NN3
+dependencies:
+    - python=3.6
+    - numpy
+    - scipy
+    - scikit-learn
+    - tensorflow
+    - keras
+    - pandas
+    - matplotlib
+    - pillow
