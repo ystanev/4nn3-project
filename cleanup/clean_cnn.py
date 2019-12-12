@@ -19,19 +19,14 @@ import subprocess
 from subprocess import run
 
 
-# TODO: fix “find: paths must precede expression: `|'” error
+# TODO: fix "find: paths must precede expression: `|'" error
 def move_images_to_one_folder(scr, dst):
     if not os.path.exists(dst):
         os.makedirs(dst)
         # print('Destination Created: ', dst)
 
-    # cmd = 'find ' + \
-    #     os.path.join(scr) + ' -type f -print0 | xargs -0 mv -t ' + \
-    #     os.path.join(dst)
-
-    execute_cmd = run(["find", str(os.path.join(scr)), "-type", "f", "-print0", "|",
-                       "xargs", "-0", "mv", "-t", str(os.path.join(dst))], stdout=subprocess.PIPE)
-    # print(execute_cmd.stdout.communicate())
+    execute_cmd = run(["find", os.path.join(scr), "-type", "f", "-print0", "|",
+                       "xargs", "-0", "mv", "-t", os.path.join(dst)], stdout=subprocess.PIPE)
 
 
 # * WORKS
@@ -55,6 +50,7 @@ def split_by_gender(image_data, save_path_male_images, save_path_female_images, 
                 print(female)
                 copyfile(file, save_path_female_images+female)
 
+
 # * WORKS
 def save_images_to_array(save_path_male_images, save_path_female_images, save_male_array, save_female_array):
     if not os.path.exists(save_male_array):
@@ -75,9 +71,14 @@ def save_images_to_array(save_path_male_images, save_path_female_images, save_ma
 
     np.save(os.path.join(save_female_array, 'females.npy'), X_females)
 
-# TODO: test the function
-# ? WIP?
+
+# * WORKS
 def cnn(saved_male_array, saved_female_array, save_model_path, save_predictions_path):
+    if not os.path.exists(save_model_path):
+        os.makedirs(save_model_path)
+    elif not os.path.exists(save_predictions_path):
+        os.makedirs(save_predictions_path)
+
     batch_size = 128
     num_classes = 2  # Males & Females
     epochs = 10
@@ -159,7 +160,7 @@ def cnn(saved_male_array, saved_female_array, save_model_path, save_predictions_
     elapsed_time = time.time() - start_time
 
     # save as .h5 file
-    model.save(os.path.join(save_model_path, 'cnn_model.py'))
+    model.save(os.path.join(save_model_path, 'cnn_model.h5'))
     print("Model Saved to Disk")
     print("Elapsed Time: ", elapsed_time)
 
@@ -175,25 +176,35 @@ def cnn(saved_male_array, saved_female_array, save_model_path, save_predictions_
 
 
 def main():
-    # Parameters Data Type: String
-    # move_images_to_one_folder('/home/yury.stanev/Downloads/lfw-deepfunneled/',
-    #                           '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data/')
+    # Parameters Data Type: String -> PATH
+    scr = '/home/yury.stanev/Downloads/lfw-deepfunneled/'
+    dst = '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data/'
 
-    # split_by_gender('/home/yury.stanev/4nn3-project/clean_cnn_outputs/data/',
-    #                 '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_by_gender/males/',
-    #                 '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_by_gender/females/',
-    #                 '/home/yury.stanev/4nn3-project/cleanup/lwf_gender_labeled_data/male_names.txt',
-    #                 '/home/yury.stanev/4nn3-project/cleanup/lwf_gender_labeled_data/female_names.txt')
+    image_data = '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data/'
+    save_path_male_images = '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_by_gender/males/'
+    save_path_female_images = '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_by_gender/females/'
 
-    # save_images_to_array('/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_by_gender/males/',
-    #                      '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_by_gender/females/',
-    #                      '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_arrays/',
-    #                      '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_arrays/')
+    male_names_path = '/home/yury.stanev/4nn3-project/cleanup/lwf_gender_labeled_data/male_names.txt'
+    female_names_path = '/home/yury.stanev/4nn3-project/cleanup/lwf_gender_labeled_data/female_names.txt'
 
-    cnn('/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_arrays/males.npy',
-        '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_arrays/females.npy',
-        '/home/yury.stanev/4nn3-project/clean_cnn_outputs/models/',
-        '/home/yury.stanev/4nn3-project/clean_cnn_outputs/outputs/')
+    save_male_array = '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_arrays/'
+    save_female_array = '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_arrays/'
+    saved_male_array = save_male_array + 'males.npy'  # ! FILE
+    saved_female_array = save_female_array + 'females.npy'  # ! FILE
+
+    save_model_path = '/home/yury.stanev/4nn3-project/clean_cnn_outputs/models/'
+    save_predictions_path = '/home/yury.stanev/4nn3-project/clean_cnn_outputs/outputs/'
+
+    move_images_to_one_folder(scr, dst)
+
+    split_by_gender(image_data, save_path_male_images,
+                    save_path_female_images, male_names_path, female_names_path)
+
+    save_images_to_array(save_path_male_images, save_path_female_images,
+                         save_male_array, save_female_array)
+
+    cnn(saved_male_array, saved_male_array,
+        save_model_path, save_predictions_path)
 
 
 main()
