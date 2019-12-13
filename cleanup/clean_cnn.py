@@ -1,6 +1,3 @@
-# The code is aimed at UNIX-Based Systems
-# move_images_to_one_folder(scr, dst) -> cmd, needs to be adjusted for Windows Systems
-
 import glob
 import os
 import numpy as np
@@ -14,19 +11,19 @@ from keras.models import Sequential
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from keras.models import load_model
-from shutil import copyfile
-import subprocess
-from subprocess import run
+from shutil import copyfile, move
 
 
-# TODO: fix "find: paths must precede expression: `|'" error
+# * WORKS
 def move_images_to_one_folder(scr, dst):
     if not os.path.exists(dst):
         os.makedirs(dst)
-        # print('Destination Created: ', dst)
 
-    execute_cmd = run(["find", os.path.join(scr), "-type", "f", "-print0", "|",
-                       "xargs", "-0", "mv", "-t", os.path.join(dst)], stdout=subprocess.PIPE)
+    for root, subdirs, files in os.walk(scr):
+        for file in files:
+            print(file)
+            path = os.path.join(root, file)
+            move(path, dst)
 
 
 # * WORKS
@@ -177,8 +174,8 @@ def cnn(saved_male_array, saved_female_array, save_model_path, save_predictions_
 
 def main():
     # Parameters Data Type: String -> PATH
-    scr = '/home/yury.stanev/Downloads/lfw-deepfunneled/'
-    dst = '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data/'
+    scr = r'/home/yury.stanev/Downloads/lfw-deepfunneled/'
+    dst = r'/home/yury.stanev/4nn3-project/clean_cnn_outputs/data/'
 
     image_data = '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data/'
     save_path_male_images = '/home/yury.stanev/4nn3-project/clean_cnn_outputs/data_by_gender/males/'
