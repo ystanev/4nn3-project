@@ -10,12 +10,19 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.models import Sequential
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
-from keras.models import load_model
+# from keras.models import load_model
 from shutil import copyfile, move
 
 
 # * WORKS
 def move_images_to_one_folder(scr, dst):
+    """
+    Moves all images in dataset into one folder to simplify data processing.
+
+    Args:
+        scr: location of the dataset
+        dst: the folder to extract the images into
+    """
     if not os.path.exists(dst):
         os.makedirs(dst)
 
@@ -28,12 +35,22 @@ def move_images_to_one_folder(scr, dst):
 
 # * WORKS
 def split_by_gender(image_data, save_path_male_images, save_path_female_images, male_names_path, female_names_path):
+    """
+    Compares the file name against gender labels provided with the dataset and splits images into gender folders.
+
+    Args:
+          image_data: the location of the folder with all the images ( `dst` from move_images_to_one_folder() )
+          save_path_female_images: location to save images of males
+          save_path_male_images: location to save female images
+          male_names_path: location of file with containing `file name` of male images
+          female_names_path: location of file with containing `file name` of female images
+    """
     if not os.path.exists(save_path_male_images):
         os.makedirs(save_path_male_images)
     elif not os.path.exists(save_path_female_images):
         os.makedirs(save_path_female_images)
 
-    filelist = glob.glob(image_data+'/*.jpg')
+    filelist = glob.glob(image_data + '/*.jpg')
     male_names = np.loadtxt(male_names_path, dtype='str', delimiter='\n')
     female_names = np.loadtxt(female_names_path, dtype='str', delimiter='\n')
 
@@ -41,22 +58,34 @@ def split_by_gender(image_data, save_path_male_images, save_path_female_images, 
         for male in male_names:
             if file.split("/")[-1] == male:
                 print(male)
-                copyfile(file, save_path_male_images+male)
+                copyfile(file, save_path_male_images + male)
         for female in female_names:
             if file.split("/")[-1] == female:
                 print(female)
-                copyfile(file, save_path_female_images+female)
+                copyfile(file, save_path_female_images + female)
 
 
 # * WORKS
 def save_images_to_array(save_path_male_images, save_path_female_images, save_male_array, save_female_array):
+    """
+    The function deals with data preparation. It performs the following operation on the images:
+        1. crop the image apprx. to face area
+        2. convert image image to grayscale ( remove RGB channels )
+        3. convert image data into a numpy array
+
+    Args:
+        save_path_male_images: the location containing images of males
+        save_path_female_images: the location containing images of females
+        save_male_array: location to save `.npy` file with male image data
+        save_female_array: location to save `.npy` file with female image data
+    """
     if not os.path.exists(save_male_array):
         os.makedirs(save_male_array)
     elif not os.path.exists(save_female_array):
         os.makedirs(save_female_array)
 
-    filelist_males = glob.glob(save_path_male_images+'/*.jpg')
-    filelist_females = glob.glob(save_path_female_images+'/*.jpg')
+    filelist_males = glob.glob(save_path_male_images + '/*.jpg')
+    filelist_females = glob.glob(save_path_female_images + '/*.jpg')
 
     # Images
     X_males = np.array([np.array(ImageOps.grayscale(Image.open(fname).crop((40, 8, 210, 205))))
@@ -71,6 +100,19 @@ def save_images_to_array(save_path_male_images, save_path_female_images, save_ma
 
 # * WORKS
 def cnn(saved_male_array, saved_female_array, save_model_path, save_predictions_path):
+    """
+    Builds the convolution neural network model for image classification.
+
+    Args:
+        saved_male_array: location of the `.npy` file with male image data
+        saved_female_array: location of the `.npy` file with female image data
+        save_model_path: path to save `.h5` file ( cnn model ) for later usage
+        save_predictions_path: path to save the file containing model class predictions
+
+    Outputs:
+        1. confusion matrix
+        2. time elapsed for model training and testing
+    """
     if not os.path.exists(save_model_path):
         os.makedirs(save_model_path)
     elif not os.path.exists(save_predictions_path):
@@ -173,6 +215,9 @@ def cnn(saved_male_array, saved_female_array, save_model_path, save_predictions_
 
 
 def main():
+    """
+    A wrapper around function calls backs.
+    """
     # Parameters Data Type: String -> PATH
     scr = r'/home/yury.stanev/Downloads/lfw-deepfunneled/'
     dst = r'/home/yury.stanev/4nn3-project/clean_cnn_outputs/data/'
@@ -200,7 +245,7 @@ def main():
     save_images_to_array(save_path_male_images, save_path_female_images,
                          save_male_array, save_female_array)
 
-    cnn(saved_male_array, saved_male_array,
+    cnn(saved_male_array, saved_female_array,
         save_model_path, save_predictions_path)
 
 
