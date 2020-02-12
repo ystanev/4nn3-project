@@ -117,6 +117,14 @@ fabric.properties
 .history
 
 # Data Folder
-# data/*
+data*
+gender_based/models*
+gender_based/lwf_gender_labeled_data*
+gender_based/data_arrays_and_labels*
+misc/data*
+*.jpg
+*.npy
+rsa*
 
 # End of https://www.gitignore.io/api/linux,pycharm,visualstudiocode
+data_arrays.zip
